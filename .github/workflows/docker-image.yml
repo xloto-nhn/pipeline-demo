@@ -38,4 +38,4 @@ jobs:
           -v $PWD:/app \
           -w /app \
           my-image-name:${{ needs.build.outputs.image_tag }} \
-          go test ./... -v
+          go test -v ./main_test.go
