@@ -14,4 +14,28 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
 
- 
+  # Step 3: Extract the Docker image tag for reuse
+    - name: Get Docker image tag
+      id: image-tag
+      run: echo "image_tag=$(date +%s)" >> $GITHUB_ENV
+    
+    # Step 4: Persist the Docker image tag using outputs
+    - name: Set output
+      run: echo "::set-output name=image_tag::$(date +%s)"
+      id: build
+
+  test:
+    needs: build # Ensure 'test' runs after 'build' is complete
+    runs-on: ubuntu-latest
+    steps:
+    # Step 1: Check out the repository code (again, testing needs the code)
+    - uses: actions/checkout@v4
+
+    # Step 2: Run tests inside the Docker container
+    - name: Run tests using the Docker image
+      run: |
+        docker run --rm \
+          -v $PWD:/app \
+          -w /app \
+          my-image-name:${{ needs.build.outputs.image_tag }} \
+          go test ./... -v
