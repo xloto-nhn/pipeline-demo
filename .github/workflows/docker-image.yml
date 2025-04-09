@@ -34,6 +34,5 @@ jobs:
     # Step 2: Run tests inside the Docker container
     - name: Run tests using the Docker image
       run: |
-        docker run -w /app \
-          my-image-name:${{ needs.build.outputs.image_tag }} \
+        docker run my-image-name:${{ needs.build.outputs.image_tag }} \
           go test -v ./main_test.go
